@@ -1,6 +1,7 @@
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -18,6 +19,10 @@ class DiceHand implements Iterable<Integer> {
     this.dice = new int[] {d1, d2, d3, d4, d5};
   }
 
+  public Map<Integer, Long> getCountMap() {
+    return stream().collect(groupingBy(d -> d, counting()));
+  }
+
   public int sumValues(int value) {
     return stream().filter(die -> die == value).mapToInt(Integer::intValue).sum();
   }
@@ -33,6 +38,13 @@ class DiceHand implements Iterable<Integer> {
 
   public Stream<Integer> stream() {
     return IntStream.of(dice).boxed();
+  }
+
+  @Override
+  public String toString() {
+    return "DiceHand{" +
+            "dice=" + Arrays.toString(dice) +
+            '}';
   }
 }
 
@@ -94,7 +106,7 @@ public class Yatzy {
 
   public static int score_pair(DiceHand diceHand) {
 
-    var counts = diceHand.stream().collect(groupingBy(d -> d, counting()));
+    var counts = diceHand.getCountMap();
     // TODO Collections.frequency()
     var max =
         counts.entrySet().stream().filter(e -> e.getValue() >= 2).mapToInt(Map.Entry::getKey).max();
@@ -102,9 +114,9 @@ public class Yatzy {
     return max.orElse(0) * 2;
   }
 
-  public static int two_pair(int d1, int d2, int d3, int d4, int d5) {
-    DiceHand diceHand = new DiceHand(d1, d2, d3, d4, d5);
-    var counts = diceHand.stream().collect(groupingBy(d -> d, counting()));
+  public static int two_pair(DiceHand diceHand) {
+    var counts = diceHand.getCountMap();
+
     var diceTwoOrMore =
         counts.entrySet().stream()
             .filter(e -> e.getValue() >= 2)
@@ -120,15 +132,13 @@ public class Yatzy {
     return diceTwoOrMore.stream().mapToInt(Integer::intValue).sum() * 2;
   }
 
-  public static int four_of_a_kind(int _1, int _2, int d3, int d4, int d5) {
-    int[] tallies;
-    tallies = new int[6];
-    tallies[_1 - 1]++;
-    tallies[_2 - 1]++;
-    tallies[d3 - 1]++;
-    tallies[d4 - 1]++;
-    tallies[d5 - 1]++;
-    for (int i = 0; i < 6; i++) if (tallies[i] >= 4) return (i + 1) * 4;
+  public static int four_of_a_kind(DiceHand diceHand) {
+    for (Map.Entry<Integer, Long> entry : diceHand.getCountMap().entrySet()) {
+      if (entry.getValue() >= 4) {
+        return entry.getKey() * 4;
+      }
+    }
+
     return 0;
   }
 
