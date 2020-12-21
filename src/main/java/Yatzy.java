@@ -1,9 +1,18 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+
 class DiceHand implements Iterable<Integer> {
-  private final int[] dice;
+
+    private final int[] dice;
 
   DiceHand(int d1, int d2, int d3, int d4, int d5) {
     this.dice = new int[] {d1, d2, d3, d4, d5};
@@ -28,6 +37,7 @@ class DiceHand implements Iterable<Integer> {
 }
 
 public class Yatzy {
+  private static final Logger log = LogManager.getLogger(Yatzy.class);
 
   @Deprecated
   public static int chance(int d1, int d2, int d3, int d4, int d5) {
@@ -39,7 +49,7 @@ public class Yatzy {
   }
 
   public static int yatzy(DiceHand dice) {
-//    if (dice.stream().collect(toSet()).size() == 1) {
+    //    if (dice.stream().collect(toSet()).size() == 1) {
     if (dice.stream().distinct().count() == 1) {
       return 50;
     }
@@ -82,34 +92,33 @@ public class Yatzy {
     dice[4] = _5;
   }
 
-  public static int score_pair(int d1, int d2, int d3, int d4, int d5) {
-    int[] counts = new int[6];
-    counts[d1 - 1]++;
-    counts[d2 - 1]++;
-    counts[d3 - 1]++;
-    counts[d4 - 1]++;
-    counts[d5 - 1]++;
-    int at;
-    for (at = 0; at != 6; at++) if (counts[6 - at - 1] >= 2) return (6 - at) * 2;
-    return 0;
+  public static int score_pair(DiceHand diceHand) {
+
+    var counts = diceHand.stream().collect(groupingBy(d -> d, counting()));
+    // TODO Collections.frequency()
+    var max = counts.entrySet().stream()
+            .filter(e -> e.getValue() >= 2)
+            .mapToInt(Map.Entry::getKey)
+            .max();
+
+    return max.orElse(0) * 2;
   }
 
   public static int two_pair(int d1, int d2, int d3, int d4, int d5) {
-    int[] counts = new int[6];
-    counts[d1 - 1]++;
-    counts[d2 - 1]++;
-    counts[d3 - 1]++;
-    counts[d4 - 1]++;
-    counts[d5 - 1]++;
-    int n = 0;
-    int score = 0;
-    for (int i = 0; i < 6; i += 1)
-      if (counts[6 - i - 1] >= 2) {
-        n++;
-        score += (6 - i);
-      }
-    if (n == 2) return score * 2;
-    else return 0;
+    DiceHand diceHand = new DiceHand(d1, d2, d3, d4, d5);
+    var counts = diceHand.stream().collect(groupingBy(d -> d, counting()));
+    var diceTwoOrMore = counts.entrySet().stream()
+            .filter(e -> e.getValue() >= 2)
+            .map(Map.Entry::getKey) // at most 2 times
+            .collect(toList());
+
+    log.trace("map = {}", counts);
+    log.trace("diceTwoOrMore = {}", diceTwoOrMore);
+    if(diceTwoOrMore.size() != 2) {
+      return 0;
+    }
+
+    return diceTwoOrMore.stream().mapToInt(Integer::intValue).sum() * 2;
   }
 
   public static int four_of_a_kind(int _1, int _2, int d3, int d4, int d5) {
