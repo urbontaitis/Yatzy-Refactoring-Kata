@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'idea'
+}
+
+defaultTasks 'build'
+
+group = 'yatzy'
+version = '1.0'
+description = 'Yatzy Rafactoring Kata'
+
+sourceCompatibility = '15'
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += '--enable-preview'
+}
+tasks.withType(Test) {
+    jvmArgs += "--enable-preview"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.1'
+
+    // mandatory dependencies for using Spock
+    implementation 'org.codehaus.groovy:groovy:3.0.6'
+    testImplementation platform('org.spockframework:spock-bom:2.0-M4-groovy-3.0')
+    testImplementation 'org.spockframework:spock-core'
+
+    // optional dependencies for using Spock
+    testImplementation 'org.hamcrest:hamcrest-core:2.2'   // only necessary if Hamcrest matchers are used
+    testRuntimeOnly 'net.bytebuddy:byte-buddy:1.10.18' // allows mocking of classes (in addition to interfaces)
+    testRuntimeOnly 'org.objenesis:objenesis:3.1' // allows mocking of classes without default constructor (together with ByteBuddy or CGLIB)
+}
+
+test {
+    useJUnit()
+    testLogging {
+        exceptionFormat = 'full'
+        events = ['passed', 'failed', 'skipped']
+    }
+}
