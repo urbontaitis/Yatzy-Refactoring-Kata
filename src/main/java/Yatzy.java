@@ -1,6 +1,9 @@
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 class DiceHand implements Iterable<Integer> {
   private final int[] dice;
@@ -9,7 +12,7 @@ class DiceHand implements Iterable<Integer> {
     this.dice = new int[] {d1, d2, d3, d4, d5};
   }
 
-  public int get(int index) {
+  public int die(int index) {
     return dice[index];
   }
 
@@ -35,7 +38,8 @@ public class Yatzy {
   }
 
   public static int yatzy(DiceHand dice) {
-    if (dice.stream().allMatch(n -> n.equals(dice.iterator().next()))) {
+//    if (dice.stream().collect(toSet()).size() == 1) {
+    if (dice.stream().distinct().count() == 1) {
       return 50;
     }
 
