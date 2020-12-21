@@ -9,8 +9,8 @@ class DiceHand implements Iterable<Integer> {
     this.dice = new int[] {d1, d2, d3, d4, d5};
   }
 
-  public int[] getDice() {
-    return dice;
+  public int get(int index) {
+    return dice[index];
   }
 
   @Override
@@ -31,20 +31,14 @@ public class Yatzy {
   }
 
   public static int chance(DiceHand diceHand) {
-    return diceHand.stream().mapToInt(i -> i).sum();
+    return diceHand.stream().mapToInt(Integer::intValue).sum();
   }
 
   public static int yatzy(DiceHand dice) {
+    if (dice.stream().allMatch(n -> n.equals(dice.iterator().next()))) {
+      return 50;
+    }
 
-    int[] counts = new int[6];
-    for (int die : dice) {
-      counts[die - 1]++;
-    }
-    for (int i = 0; i != 6; i++) {
-      if (counts[i] == 5) {
-        return 50;
-      }
-    }
     return 0;
   }
 
