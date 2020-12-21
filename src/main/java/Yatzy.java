@@ -59,6 +59,18 @@ public class Yatzy {
     return sumValues(diceHand, 3);
   }
 
+  public static int fours(DiceHand diceHand) {
+    return sumValues(diceHand, 4);
+  }
+
+  public static int fives(DiceHand diceHand) {
+    return sumValues(diceHand, 5);
+  }
+
+  public static int sixes(DiceHand diceHand) {
+    return sumValues(diceHand, 6);
+  }
+
   protected int[] dice;
 
   public Yatzy(int d1, int d2, int d3, int d4, int _5) {
@@ -68,30 +80,6 @@ public class Yatzy {
     dice[2] = d3;
     dice[3] = d4;
     dice[4] = _5;
-  }
-
-  public int fours() {
-    int sum;
-    sum = 0;
-    for (int at = 0; at != 5; at++) {
-      if (dice[at] == 4) {
-        sum += 4;
-      }
-    }
-    return sum;
-  }
-
-  public int fives() {
-    int s = 0;
-    int i;
-    for (i = 0; i < dice.length; i++) if (dice[i] == 5) s = s + 5;
-    return s;
-  }
-
-  public int sixes() {
-    int sum = 0;
-    for (int at = 0; at < dice.length; at++) if (dice[at] == 6) sum = sum + 6;
-    return sum;
   }
 
   public static int score_pair(int d1, int d2, int d3, int d4, int d5) {
