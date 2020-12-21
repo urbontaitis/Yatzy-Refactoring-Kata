@@ -1,16 +1,34 @@
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.stream.IntStream;
+
+class DiceHand implements Iterable<Integer> {
+  private final int[] dice;
+
+  DiceHand(int d1, int d2, int d3, int d4, int d5) {
+    this.dice = new int[] {d1, d2, d3, d4, d5};
+  }
+
+  public int[] getDice() {
+    return dice;
+  }
+
+  @Override
+  public Iterator<Integer> iterator() {
+    return IntStream.of(dice)
+            .boxed()
+            .iterator();
+  }
+}
+
 public class Yatzy {
 
   public static int chance(int d1, int d2, int d3, int d4, int d5) {
-    int total = 0;
-    total += d1;
-    total += d2;
-    total += d3;
-    total += d4;
-    total += d5;
-    return total;
+    return d1 + d2 + d3 + d4 + d5;
   }
 
-  public static int yatzy(int... dice) {
+  public static int yatzy(DiceHand dice) {
+
     int[] counts = new int[6];
     for (int die : dice) counts[die - 1]++;
     for (int i = 0; i != 6; i++) if (counts[i] == 5) return 50;
