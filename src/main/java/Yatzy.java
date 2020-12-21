@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.toList;
 
 class DiceHand implements Iterable<Integer> {
 
-    private final int[] dice;
+  private final int[] dice;
 
   DiceHand(int d1, int d2, int d3, int d4, int d5) {
     this.dice = new int[] {d1, d2, d3, d4, d5};
@@ -96,10 +96,8 @@ public class Yatzy {
 
     var counts = diceHand.stream().collect(groupingBy(d -> d, counting()));
     // TODO Collections.frequency()
-    var max = counts.entrySet().stream()
-            .filter(e -> e.getValue() >= 2)
-            .mapToInt(Map.Entry::getKey)
-            .max();
+    var max =
+        counts.entrySet().stream().filter(e -> e.getValue() >= 2).mapToInt(Map.Entry::getKey).max();
 
     return max.orElse(0) * 2;
   }
@@ -107,14 +105,15 @@ public class Yatzy {
   public static int two_pair(int d1, int d2, int d3, int d4, int d5) {
     DiceHand diceHand = new DiceHand(d1, d2, d3, d4, d5);
     var counts = diceHand.stream().collect(groupingBy(d -> d, counting()));
-    var diceTwoOrMore = counts.entrySet().stream()
+    var diceTwoOrMore =
+        counts.entrySet().stream()
             .filter(e -> e.getValue() >= 2)
             .map(Map.Entry::getKey) // at most 2 times
             .collect(toList());
 
     log.trace("map = {}", counts);
     log.trace("diceTwoOrMore = {}", diceTwoOrMore);
-    if(diceTwoOrMore.size() != 2) {
+    if (diceTwoOrMore.size() != 2) {
       return 0;
     }
 
