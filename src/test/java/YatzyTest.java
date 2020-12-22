@@ -3,6 +3,16 @@ import static org.junit.Assert.*;
 
 public class YatzyTest {
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThroughExceptionWhenNegativeValueIsGiven() {
+        new DiceHand(-1, 1, 1, 1, 1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThroughExceptionWhenDiceValueIsMoreThanSix() {
+        new DiceHand(1, 7, 1, 1, 1);
+    }
+
     @Test
     public void chance_scores_sum_of_all_dice() {
         int expected = 15;
@@ -93,21 +103,24 @@ public class YatzyTest {
 
     @Test
     public void smallStraight() {
-        assertEquals(15, Yatzy.smallStraight(1,2,3,4,5));
-        assertEquals(15, Yatzy.smallStraight(2,3,4,5,1));
-        assertEquals(0, Yatzy.smallStraight(1,2,2,4,5));
+        assertEquals(15, Yatzy.smallStraight(new DiceHand(1, 2, 3, 4, 5)));
+        assertEquals(15, Yatzy.smallStraight(new DiceHand(2, 3, 4, 5, 1)));
+        assertEquals(0, Yatzy.smallStraight(new DiceHand(1, 2, 2, 4, 5)));
     }
 
     @Test
     public void largeStraight() {
-        assertEquals(20, Yatzy.largeStraight(6,2,3,4,5));
-        assertEquals(20, Yatzy.largeStraight(2,3,4,5,6));
-        assertEquals(0, Yatzy.largeStraight(1,2,2,4,5));
+        assertEquals(20, Yatzy.largeStraight(new DiceHand(6, 2, 3, 4, 5)));
+        assertEquals(20, Yatzy.largeStraight(new DiceHand(2, 3, 4, 5, 6)));
+        assertEquals(0, Yatzy.largeStraight(new DiceHand(1, 2, 2, 4, 5)));
     }
 
     @Test
     public void fullHouse() {
-        assertEquals(18, Yatzy.fullHouse(6,2,2,2,6));
-        assertEquals(0, Yatzy.fullHouse(2,3,4,5,6));
+        assertEquals(18, Yatzy.fullHouse(new DiceHand(6, 2, 2, 2, 6)));
+        assertEquals(8, Yatzy.fullHouse(new DiceHand(1, 1, 2, 2, 2)));
+        assertEquals(0, Yatzy.fullHouse(new DiceHand(2, 3, 4, 5, 6)));
+        assertEquals(0, Yatzy.fullHouse(new DiceHand(2, 2, 3, 3, 4)));
+        assertEquals(0, Yatzy.fullHouse(new DiceHand(4, 4, 4, 4, 4)));
     }
 }
